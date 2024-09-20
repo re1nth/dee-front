@@ -5,8 +5,10 @@ import { Card, Input, Button, Space } from 'antd';
 import Task from './Task';
 import { ItemTypes } from '../constants';
 
-const Column = ({ column, moveTask, addTask }) => {
+const Column = ({ column, moveTask, addTask, editColumnTitle }) => {
   const [taskTitle, setTaskTitle] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [newTitle, setNewTitle] = useState(column.title);
 
   const [, drop] = useDrop({
     accept: ItemTypes.TASK,
@@ -20,9 +22,28 @@ const Column = ({ column, moveTask, addTask }) => {
     }
   };
 
+  const handleEditTitle = () => {
+    if (newTitle.trim()) {
+      editColumnTitle(column.id, newTitle);
+      setIsEditing(false);
+    }
+  };
+
   return (
     <Card
-      title={column.title}
+      title={
+        isEditing ? (
+          <Input
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            onPressEnter={handleEditTitle}
+            onBlur={handleEditTitle}
+            autoFocus
+          />
+        ) : (
+          <div onClick={() => setIsEditing(true)}>{column.title}</div>
+        )
+      }
       ref={drop}
       className="column"
       headStyle={{ backgroundColor: '#f0f2f5', fontWeight: 'bold' }}
