@@ -4,8 +4,9 @@ import { Input, Button, Card } from 'antd';
 
 const AddColumn = ({ addColumn }) => {
   const [columnTitle, setColumnTitle] = useState('');
-
+  
   const handleAddColumn = () => {
+    console.log("Hello Laila add column");
     if (columnTitle.trim()) {
       addColumn(columnTitle);
       setColumnTitle('');

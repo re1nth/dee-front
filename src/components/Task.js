@@ -14,7 +14,14 @@ const Task = ({ task, columnId }) => {
     <Card
       ref={drag}
       className="task"
-      style={{ marginBottom: '8px', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+      style={{ 
+        marginBottom: '8px', 
+        borderRadius: '4px', 
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)', 
+        height: '60px', // Adjust the height as needed
+        display: 'flex',
+        alignItems: 'center'
+      }}
     >
       <Checkbox style={{ marginRight: '8px' }} />
       {task.title}

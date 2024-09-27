@@ -1,65 +1,50 @@
 // hooks/useKanban.js
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import {listScenesForProject} from '../networkCalls/sceneService'; // Import the listScenesForProject method
+import { AuthContext } from '../AuthContext'; // Import the AuthContext
 
-const initialData = {
-  scenes: {
-    1: {
-      columns: [
-        {
-          id: 'column-1',
-          title: 'Director',
-          tasks: [
-            { id: 'task-1', title: 'Task 1' },
-            { id: 'task-2', title: 'Task 2' },
-          ],
-        },
-        {
-          id: 'column-2',
-          title: 'Cinematography',
-          tasks: [],
-        },
-        {
-          id: 'column-3',
-          title: 'Art director',
-          tasks: [{ id: 'task-3', title: 'Task 3' }],
-        },
-        {
-          id: 'column-4',
-          title: 'Direction department',
-          tasks: [],
-        },
-      ],
-    },
-    2: {
-      columns: [
-        {
-          id: 'column-1',
-          title: 'Director',
-          tasks: [],
-        },
-        {
-          id: 'column-2',
-          title: 'Cinematography',
-          tasks: [],
-        },
-        {
-          id: 'column-3',
-          title: 'Art director',
-          tasks: [],
-        },
-        {
-          id: 'column-4',
-          title: 'Direction department',
-          tasks: [],
-        },
-      ],
-    },
-  },
+const createInitialData = (scenesData) => {
+  const scenes = {};
+
+  for (let index = 0; index < scenesData.length; index++) {
+    const { id, name } = scenesData[index];
+    scenes[index] = {
+      key: id,
+      name: name,
+      columns: [],
+    };
+  }
+
+  return { scenes };
 };
 
 const useKanban = () => {
+  const initialData = createInitialData([]);
   const [data, setData] = useState(initialData);
-  const [selectedScene, setSelectedScene] = useState(1);
+  const [selectedScene, setSelectedScene] = useState(0);
+  const { authToken } = useContext(AuthContext); // Use the AuthContext to get the authToken
+
+  useEffect(() => {
+    const fetchAndSetScenes = async () => {
+      try {
+        // Fetch scenes data and set the initial data
+        const scenesData = await listScenesForProject(1, authToken);
+
+        const initialData = createInitialData(scenesData);
+        setData(initialData);
+        
+        //point the selection scene appropriately
+        const initialSceneKey = scenesData.length > 0 ? 0 : null;
+        setSelectedScene(initialSceneKey);
+      } catch (error) {
+        console.error('Error fetching scenes:', error);
+      }
+    };
+
+    if (authToken) {
+      fetchAndSetScenes();
+    }
+  }, [authToken]);
 
   const moveTask = (taskId, sourceColumnId, targetColumnId) => {
     const scene = data.scenes[selectedScene];
@@ -114,13 +99,24 @@ const useKanban = () => {
   };
 
   const addColumn = (title) => {
+    console.log('Entered addColumn sdsdsd', title);
+
     const newColumn = {
       id: `column-${Date.now()}`,
       title,
       tasks: [],
     };
 
+    console.log("Selected scene : ", selectedScene);
+
     const scene = data.scenes[selectedScene];
+    
+    if (scene.columns.length === 0) {
+      console.log('No columns available');
+    } else {
+      console.log('Columns are available', scene.columns);
+    }
+
     const updatedColumns = [...scene.columns, newColumn];
 
     setData({
