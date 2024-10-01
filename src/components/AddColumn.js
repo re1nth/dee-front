@@ -1,12 +1,13 @@
 // components/AddColumn.js
 import React, { useState } from 'react';
 import { Input, Button, Card } from 'antd';
+import { createUserStory } from '../networkCalls/userStoryService';
 
-const AddColumn = ({ addColumn }) => {
+const AddColumn = ({ addColumn, authToken, selectedSceneKey }) => {
   const [columnTitle, setColumnTitle] = useState('');
   
-  const handleAddColumn = () => {
-    console.log("Hello Laila add column");
+  const handleAddColumn = async() => {
+
     if (columnTitle.trim()) {
       addColumn(columnTitle);
       setColumnTitle('');

@@ -4,7 +4,7 @@ import { Menu, Button } from 'antd';
 import { AuthContext } from '../AuthContext'; // Adjust the import path as necessary
 import {createSceneForProject} from '../networkCalls/sceneService';
 
-const Sidebar = ({ scenes, selectedScene, setSelectedScene }) => {
+const Sidebar = ({ scenes, selectedScene, setSelectedScene, setSelectedSceneKey }) => {
   const [sceneCount, setSceneCount] = useState(Object.keys(scenes).length);
   const { authToken } = useContext(AuthContext); // Retrieve authToken from AuthContext
 
@@ -23,6 +23,7 @@ const Sidebar = ({ scenes, selectedScene, setSelectedScene }) => {
 
       setSceneCount(newSceneKey + 1);
       setSelectedScene(newSceneKey);
+      setSelectedSceneKey(response.id);
       console.log('After adding new scene', scenes);
     } catch (error) {
       console.error('Error creating scene:', error);
@@ -36,7 +37,8 @@ const Sidebar = ({ scenes, selectedScene, setSelectedScene }) => {
         selectedKeys={[selectedScene !==undefined ? selectedScene.toString() : '']}
         onClick={({ key }) => {
           setSelectedScene(Number(key));
-      }}
+          setSelectedSceneKey(scenes[Number(key)]? scenes[Number(key)]?.key : null);
+        }}
         style={{ height: '100%', borderRight: 0 }}
       >
       {scenes && Object.values(scenes).length > 0 ? (

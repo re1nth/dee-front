@@ -19,7 +19,6 @@ const listScenesForProject = async (projectId, authToken) => {
     .sort((a, b) => a.name.localeCompare(b.name)) // Sort scenes by name
     .map(scene => ({ id: scene.id, name: scene.name })); // Extract the id and name from each scene
 
-    console.log('Scenes:', scenes);
     return scenes;
   } catch (error) {
     console.error('Error fetching milestones:', error);

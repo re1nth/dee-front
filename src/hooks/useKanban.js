@@ -2,6 +2,7 @@
 import { useState, useEffect, useContext } from 'react';
 import {listScenesForProject} from '../networkCalls/sceneService'; // Import the listScenesForProject method
 import { AuthContext } from '../AuthContext'; // Import the AuthContext
+import { createUserStory } from '../networkCalls/userStoryService';
 
 const createInitialData = (scenesData) => {
   const scenes = {};
@@ -21,8 +22,15 @@ const createInitialData = (scenesData) => {
 const useKanban = () => {
   const initialData = createInitialData([]);
   const [data, setData] = useState(initialData);
+
+  // This refers to the index of the selected scene in the sidebar
   const [selectedScene, setSelectedScene] = useState(0);
-  const { authToken } = useContext(AuthContext); // Use the AuthContext to get the authToken
+
+  // This refers to the key of the selected scene in the sidebar
+  const [selectedSceneKey, setSelectedSceneKey] = useState(null);
+
+  // Use the AuthContext to get the authToken
+  const { authToken } = useContext(AuthContext); 
 
   useEffect(() => {
     const fetchAndSetScenes = async () => {
@@ -36,6 +44,7 @@ const useKanban = () => {
         //point the selection scene appropriately
         const initialSceneKey = scenesData.length > 0 ? 0 : null;
         setSelectedScene(initialSceneKey);
+        setSelectedSceneKey(scenesData[initialSceneKey].id);
       } catch (error) {
         console.error('Error fetching scenes:', error);
       }
@@ -98,16 +107,21 @@ const useKanban = () => {
     });
   };
 
-  const addColumn = (title) => {
-    console.log('Entered addColumn sdsdsd', title);
 
+  const addColumn = async (title) => {
+    console.log('Entered addColumn with', title);
+
+    const response = await createUserStory(authToken, 1, selectedSceneKey, title);
+  
+    // Extract properties inline
+    const { subject, id } = response;
+    console.log('Response from creating user story:', { subject, id });
+  
     const newColumn = {
-      id: `column-${Date.now()}`,
-      title,
+      id: id,
+      title: subject,
       tasks: [],
     };
-
-    console.log("Selected scene : ", selectedScene);
 
     const scene = data.scenes[selectedScene];
     
@@ -155,7 +169,7 @@ const useKanban = () => {
     });
   };
 
-  return { data, selectedScene, setSelectedScene, moveTask, addTask, addColumn, editColumnTitle };
+  return { data, setData, selectedScene, setSelectedScene, selectedSceneKey, setSelectedSceneKey, moveTask, addTask, addColumn, editColumnTitle };
 };
 
 export default useKanban;

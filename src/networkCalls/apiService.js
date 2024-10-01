@@ -16,7 +16,8 @@ const makeApiCall = async (url, method = 'GET', params = {}, headers = {}, body 
     };
 
     // Log the options
-    console.log('Request Options:', options);
+    // console.log("Full URL: ", fullUrl);
+    // console.log('Request Options:', options);
 
     try {
       const response = await fetch(fullUrl, options);

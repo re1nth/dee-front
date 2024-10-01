@@ -4,8 +4,10 @@ import { useDrop } from 'react-dnd';
 import { Card, Input, Button, Space } from 'antd';
 import Task from './Task';
 import { ItemTypes } from '../constants';
+import { createUserStory } from '../networkCalls/userStoryService';
 
-const Column = ({ column, moveTask, addTask, editColumnTitle }) => {
+const Column = ({ column, moveTask, addTask, editColumnTitle, authToken, selectedSceneKey }) => {
+
   const [taskTitle, setTaskTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(column.title);
@@ -22,8 +24,9 @@ const Column = ({ column, moveTask, addTask, editColumnTitle }) => {
     }
   };
 
-  const handleEditTitle = () => {
+  const handleEditTitle = async () => {
     if (newTitle.trim()) {
+      // Handle success (e.g., update UI, show notification)
       editColumnTitle(column.id, newTitle);
       setIsEditing(false);
     }

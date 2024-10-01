@@ -3,7 +3,6 @@
 import makeApiCall from './apiService';
 
 const loginUser = async (username, password) => {
-  console.log("Hello UserLogin entered");
   const url = 'http://localhost:9000/api/v1/auth';
   const method = 'POST';
   const headers = {
