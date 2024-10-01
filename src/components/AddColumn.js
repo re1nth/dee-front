@@ -1,7 +1,6 @@
 // components/AddColumn.js
 import React, { useState } from 'react';
 import { Input, Button, Card } from 'antd';
-import { createUserStory } from '../networkCalls/userStoryService';
 
 const AddColumn = ({ addColumn, authToken, selectedSceneKey }) => {
   const [columnTitle, setColumnTitle] = useState('');
@@ -17,7 +16,7 @@ const AddColumn = ({ addColumn, authToken, selectedSceneKey }) => {
   return (
     <Card className="column" bodyStyle={{ padding: '16px' }}>
       <Input
-        placeholder="New column title"
+        placeholder="Add Department"
         value={columnTitle}
         onChange={(e) => setColumnTitle(e.target.value)}
         onPressEnter={handleAddColumn}

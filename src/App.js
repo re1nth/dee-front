@@ -15,7 +15,7 @@ import { listTasksForScene } from './networkCalls/taskService';
 const { Sider, Content } = Layout;
 
 const App = () => {
-  const { data, setData, selectedScene, setSelectedScene, selectedSceneKey, setSelectedSceneKey, moveTask, addTask, addColumn, editColumnTitle } = useKanban();
+  const { data, setData, selectedScene, setSelectedScene, selectedSceneKey, setSelectedSceneKey, moveTask, addTask, editTask, addColumn, editColumnTitle } = useKanban();
   const { authToken, setAuthToken } = useContext(AuthContext);
 
   const prevSelectedScene = useRef();
@@ -73,16 +73,21 @@ const App = () => {
           const response = await listUserStories(authToken, 1, selectedSceneKey);
 
           // list all the tasks under each user story
-          const foo = await listTasksForScene(authToken, 1, selectedSceneKey);
-          console.log("Tasks for the scene", foo);
+          const groupedTasksForScene = await listTasksForScene(authToken, 1, selectedSceneKey);
+          console.log("Tasks for the scene", groupedTasksForScene);
 
           const columns = Array.isArray(response) ? response : [response];
 
-          const updatedColumns = columns.map(column => ({
-            id: column.id,
-            title: column.subject,
-            tasks: [],
-          }));
+          const updatedColumns = columns.map(column => {
+            const matchingGroup = groupedTasksForScene.find(group => group.id === column.id);
+            return {
+              id: column.id,
+              title: column.subject,
+              version : column.version,
+              tasks: matchingGroup ? matchingGroup.tasks : [],
+            };
+          });
+
           setData(prevData => ({
             ...prevData,
             scenes: {
@@ -109,7 +114,7 @@ const App = () => {
     if (memoizedScenes && memoizedScenes[selectedScene]?.columns) {
       return memoizedScenes[selectedScene].columns.map((column) => (
         <Col span={6} key={column.id}>
-          <Column column={column} moveTask={moveTask} addTask={addTask} editColumnTitle={editColumnTitle} authToken ={authToken} selectedSceneKey={selectedSceneKey}/>
+          <Column column={column} moveTask={moveTask} addTask={addTask} editTask = {editTask} editColumnTitle={editColumnTitle} authToken ={authToken} selectedSceneKey={selectedSceneKey}/>
         </Col>
       ));
     } else {

@@ -1,10 +1,22 @@
 // components/Task.js
-import React from 'react';
+import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { Card, Checkbox } from 'antd';
 import { ItemTypes } from '../constants';
 
-const Task = ({ task, columnId }) => {
+const Task = ({ task, columnId, editTask }) => {
+
+  const [isClosed, setIsClosed] = useState(task.isClosed);
+
+  const handleCheckboxChange = async () => {
+    // Update the task status in the backend
+    console.log("Current task status and version : ", isClosed, task.version);
+
+    await editTask(task.id, columnId, task.title, !isClosed, task.version);
+
+    setIsClosed(!isClosed);
+  };
+
   const [, drag] = useDrag({
     type: ItemTypes.TASK,
     item: { id: task.id, columnId },
@@ -23,7 +35,11 @@ const Task = ({ task, columnId }) => {
         alignItems: 'center'
       }}
     >
-      <Checkbox style={{ marginRight: '8px' }} />
+    <Checkbox 
+      style={{ marginRight: '8px' }} 
+      checked={isClosed} 
+      onChange={handleCheckboxChange}
+      />
       {task.title}
     </Card>
   );

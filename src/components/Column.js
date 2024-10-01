@@ -4,9 +4,8 @@ import { useDrop } from 'react-dnd';
 import { Card, Input, Button, Space } from 'antd';
 import Task from './Task';
 import { ItemTypes } from '../constants';
-import { createUserStory } from '../networkCalls/userStoryService';
 
-const Column = ({ column, moveTask, addTask, editColumnTitle, authToken, selectedSceneKey }) => {
+const Column = ({ column, moveTask, addTask, editTask, editColumnTitle, authToken, selectedSceneKey }) => {
 
   const [taskTitle, setTaskTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -27,7 +26,7 @@ const Column = ({ column, moveTask, addTask, editColumnTitle, authToken, selecte
   const handleEditTitle = async () => {
     if (newTitle.trim()) {
       // Handle success (e.g., update UI, show notification)
-      editColumnTitle(column.id, newTitle);
+      editColumnTitle(column.id, column.version, newTitle);
       setIsEditing(false);
     }
   };
@@ -54,7 +53,7 @@ const Column = ({ column, moveTask, addTask, editColumnTitle, authToken, selecte
     >
       <Space direction="vertical" style={{ width: '100%' }}>
         {column.tasks.map((task) => (
-          <Task key={task.id} task={task} columnId={column.id} />
+          <Task key={task.id} task={task} columnId={column.id} editTask ={editTask}/>
         ))}
         <Input
           placeholder="New task"

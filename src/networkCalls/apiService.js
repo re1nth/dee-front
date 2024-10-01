@@ -16,21 +16,30 @@ const makeApiCall = async (url, method = 'GET', params = {}, headers = {}, body 
     };
 
     // Log the options
-    // console.log("Full URL: ", fullUrl);
-    // console.log('Request Options:', options);
+    console.log("Full URL: ", fullUrl);
+    console.log('Request Options:', options);
 
     try {
       const response = await fetch(fullUrl, options);
       
+      console.log("Response:", response);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+
+      // Check if responseBody is empty
+      const responseBody = await response.text();
+      
+      if (!responseBody) {
+        return {}; // or return null, depending on your use case
+      }
+
+      return JSON.parse(responseBody);
     } catch (error) {
-      console.log('Error making API call:', error);
       console.error('Error making API call:', error);
       throw error;
     }
   };
-  
-  export default makeApiCall;
+
+export { makeApiCall };

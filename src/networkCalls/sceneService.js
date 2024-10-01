@@ -1,6 +1,6 @@
 // sceneService.js
 
-import makeApiCall from './apiService';
+import {makeApiCall} from './apiService';
 
 const listScenesForProject = async (projectId, authToken) => {
   const url = 'http://localhost:9000/api/v1/milestones'; // Assuming the URL is correct

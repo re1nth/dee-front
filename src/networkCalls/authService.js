@@ -1,6 +1,6 @@
 // authService.js
 
-import makeApiCall from './apiService';
+import {makeApiCall} from './apiService';
 
 const loginUser = async (username, password) => {
   const url = 'http://localhost:9000/api/v1/auth';

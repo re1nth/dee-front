@@ -2,7 +2,8 @@
 import { useState, useEffect, useContext } from 'react';
 import {listScenesForProject} from '../networkCalls/sceneService'; // Import the listScenesForProject method
 import { AuthContext } from '../AuthContext'; // Import the AuthContext
-import { createUserStory } from '../networkCalls/userStoryService';
+import { createUserStory, modifyUserStoryTitle } from '../networkCalls/userStoryService';
+import { createTaskForColumn, deleteTask, editTaskForColumn } from '../networkCalls/taskService';
 
 const createInitialData = (scenesData) => {
   const scenes = {};
@@ -55,13 +56,27 @@ const useKanban = () => {
     }
   }, [authToken]);
 
-  const moveTask = (taskId, sourceColumnId, targetColumnId) => {
+  const moveTask = async (taskId, sourceColumnId, targetColumnId) => {
     const scene = data.scenes[selectedScene];
     const sourceColumn = scene.columns.find((col) => col.id === sourceColumnId);
     const targetColumn = scene.columns.find((col) => col.id === targetColumnId);
     const task = sourceColumn.tasks.find((task) => task.id === taskId);
 
     sourceColumn.tasks = sourceColumn.tasks.filter((task) => task.id !== taskId);
+
+    // Delete the task from one user story
+    deleteTask(authToken, taskId);
+
+    // Create a task for another user story
+    const { id, subject, is_blocked, version } = await createTaskForColumn(authToken, 1, selectedSceneKey, targetColumnId, task.title, task.isClosed);
+    console.log('Created task:', { id, subject, is_blocked, version });
+
+    // Change the properties before it will be added to the target column
+    task.id = id;
+    task.subject = subject;
+    task.is_blocked = is_blocked;
+    task.version = version;
+    
     targetColumn.tasks = [...targetColumn.tasks, task];
 
     setData({
@@ -78,11 +93,20 @@ const useKanban = () => {
     });
   };
 
-  const addTask = (columnId, taskTitle) => {
+  const addTask = async (columnId, taskTitle) => {
+    // Create a task for a column under the selected scene
+    const response = await createTaskForColumn(authToken, 1, selectedSceneKey, columnId, taskTitle, false);
+
+    console.log("Response from creating task:", response);
+
     const newTask = {
-      id: `task-${Date.now()}`,
-      title: taskTitle,
+      id: response.id,
+      title: response.subject,
+      isClosed: response.is_blocked,
+      version: response.version,
     };
+
+    console.log('Adding task:', newTask);
 
     const scene = data.scenes[selectedScene];
     const updatedColumns = scene.columns.map((column) => {
@@ -107,6 +131,44 @@ const useKanban = () => {
     });
   };
 
+  const editTask = async (taskId, columnId, newTitle, isClosed, version) => {
+    // Create a task for a column under the selected scene
+    const response = await editTaskForColumn(authToken, taskId, newTitle, isClosed, version);
+    console.log("Response from editing task:", response);
+
+    const newTask = {
+      id: response.id,
+      title: response.subject,
+      isClosed: response.is_blocked,
+      version: response.version,
+    };
+
+    console.log('Adding task:', newTask);
+
+    const scene = data.scenes[selectedScene];
+    const updatedColumns = scene.columns.map((column) => {
+      if (column.id === columnId) {
+        return {
+          ...column,
+          tasks: column.tasks.map(task => 
+            task.id === taskId ? { ...task, ...newTask } : task
+          )
+        };
+      }
+      return column;
+    });
+
+    setData({
+      ...data,
+      scenes: {
+        ...data.scenes,
+        [selectedScene]: {
+          ...scene,
+          columns: updatedColumns,
+        },
+      },
+    });
+  };
 
   const addColumn = async (title) => {
     console.log('Entered addColumn with', title);
@@ -114,12 +176,13 @@ const useKanban = () => {
     const response = await createUserStory(authToken, 1, selectedSceneKey, title);
   
     // Extract properties inline
-    const { subject, id } = response;
-    console.log('Response from creating user story:', { subject, id });
+    const { subject, id, version } = response;
+    console.log('Response from creating user story:', { subject, id, version });
   
     const newColumn = {
       id: id,
       title: subject,
+      version: version,
       tasks: [],
     };
 
@@ -145,13 +208,19 @@ const useKanban = () => {
     });
   };
 
-  const editColumnTitle = (columnId, newTitle) => {
+  const editColumnTitle = (columnId, columnVersion, newTitle) => {
     const scene = data.scenes[selectedScene];
+
+    // Edit the existing user story with the new title
+    modifyUserStoryTitle(authToken, columnId, newTitle, columnVersion);
+
+    // If the patch request is successful, version number will increment by 1
     const updatedColumns = scene.columns.map((column) => {
       if (column.id === columnId) {
         return {
           ...column,
           title: newTitle,
+          version: columnVersion+1,
         };
       }
       return column;
@@ -169,7 +238,7 @@ const useKanban = () => {
     });
   };
 
-  return { data, setData, selectedScene, setSelectedScene, selectedSceneKey, setSelectedSceneKey, moveTask, addTask, addColumn, editColumnTitle };
+  return { data, setData, selectedScene, setSelectedScene, selectedSceneKey, setSelectedSceneKey, moveTask, addTask, editTask, addColumn, editColumnTitle };
 };
 
 export default useKanban;
