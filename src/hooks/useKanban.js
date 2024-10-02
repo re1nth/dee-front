@@ -20,7 +20,7 @@ const createInitialData = (scenesData) => {
   return { scenes };
 };
 
-const useKanban = () => {
+const useKanban = (projectId) => {
   const initialData = createInitialData([]);
   const [data, setData] = useState(initialData);
 
@@ -37,7 +37,7 @@ const useKanban = () => {
     const fetchAndSetScenes = async () => {
       try {
         // Fetch scenes data and set the initial data
-        const scenesData = await listScenesForProject(1, authToken);
+        const scenesData = await listScenesForProject(projectId, authToken);
 
         const initialData = createInitialData(scenesData);
         setData(initialData);
@@ -54,7 +54,7 @@ const useKanban = () => {
     if (authToken) {
       fetchAndSetScenes();
     }
-  }, [authToken]);
+  }, [authToken, projectId]);
 
   const moveTask = async (taskId, sourceColumnId, targetColumnId) => {
     const scene = data.scenes[selectedScene];
@@ -68,7 +68,7 @@ const useKanban = () => {
     deleteTask(authToken, taskId);
 
     // Create a task for another user story
-    const { id, subject, is_blocked, version } = await createTaskForColumn(authToken, 1, selectedSceneKey, targetColumnId, task.title, task.isClosed);
+    const { id, subject, is_blocked, version } = await createTaskForColumn(authToken, projectId, selectedSceneKey, targetColumnId, task.title, task.isClosed);
     console.log('Created task:', { id, subject, is_blocked, version });
 
     // Change the properties before it will be added to the target column
@@ -95,7 +95,7 @@ const useKanban = () => {
 
   const addTask = async (columnId, taskTitle) => {
     // Create a task for a column under the selected scene
-    const response = await createTaskForColumn(authToken, 1, selectedSceneKey, columnId, taskTitle, false);
+    const response = await createTaskForColumn(authToken, projectId, selectedSceneKey, columnId, taskTitle, false);
 
     console.log("Response from creating task:", response);
 
@@ -173,7 +173,7 @@ const useKanban = () => {
   const addColumn = async (title) => {
     console.log('Entered addColumn with', title);
 
-    const response = await createUserStory(authToken, 1, selectedSceneKey, title);
+    const response = await createUserStory(authToken, projectId, selectedSceneKey, title);
   
     // Extract properties inline
     const { subject, id, version } = response;

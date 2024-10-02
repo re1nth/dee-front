@@ -1,0 +1,48 @@
+.page-container {
+    background-color: #E0FFFF;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .page-title {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .add-project-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #FFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .add-project-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #FFFAF0;
+    transition: box-shadow 0.3s ease-in-out;
+    position: relative;
+    width: 300px;
+    height: auto;
+  }
+  
+  .card-body {
+    padding: 15px;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }

@@ -4,7 +4,7 @@ import { Menu, Button } from 'antd';
 import { AuthContext } from '../AuthContext'; // Adjust the import path as necessary
 import {createSceneForProject} from '../networkCalls/sceneService';
 
-const Sidebar = ({ scenes, selectedScene, setSelectedScene, setSelectedSceneKey }) => {
+const Sidebar = ({ projectId, scenes, selectedScene, setSelectedScene, setSelectedSceneKey }) => {
   const [sceneCount, setSceneCount] = useState(Object.keys(scenes).length);
   const { authToken } = useContext(AuthContext); // Retrieve authToken from AuthContext
 
@@ -18,7 +18,7 @@ const Sidebar = ({ scenes, selectedScene, setSelectedScene, setSelectedSceneKey 
 
     // Call to create a new scene and wait for the response
     try {
-      const response = await createSceneForProject(1, `Scene ${newSceneKey + 1}`, authToken);
+      const response = await createSceneForProject(projectId, `Scene ${newSceneKey + 1}`, authToken);
       scenes[newSceneKey] = { key: response.id, name: response.name, columns: [] }; // Initialize with key, name, and empty columns
 
       setSceneCount(newSceneKey + 1);
