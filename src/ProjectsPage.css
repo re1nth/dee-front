@@ -22,6 +22,8 @@
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease-in-out;
+  width: auto; /* Ensure the button does not stretch */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .add-project-button:hover {

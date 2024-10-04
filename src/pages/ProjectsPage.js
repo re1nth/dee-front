@@ -4,7 +4,6 @@ import { Card, Row, Col, Modal, Input, Button, Form } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { listProjects, createProject, editProject } from '../networkCalls/projectService';
 import { AuthContext } from '../AuthContext';
-import loginUser from '../networkCalls/authService';
 import '../ProjectsPage.css';
 
 const { Meta } = Card;
@@ -22,14 +21,6 @@ const ProjectsPage = () => {
   useEffect(() => {
     const authenticateUser = async () => {
       console.log("Hello authenticateUser entered");
-      try {
-        const response = await loginUser('test-username', 'password');
-        console.log('Username:', response.username);
-        console.log('Auth Token:', response.auth_token);
-        setAuthToken(response.auth_token);
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
     };
 
     authenticateUser();

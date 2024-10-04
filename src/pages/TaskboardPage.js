@@ -7,7 +7,6 @@ import Column from '../components/Column';
 import Sidebar from '../components/Sidebar';
 import AddColumn from '../components/AddColumn';
 import useKanban from '../hooks/useKanban';
-import loginUser from '../networkCalls/authService';
 import { AuthContext } from '../AuthContext';
 import '../App.css';
 import { listUserStories } from '../networkCalls/userStoryService';
@@ -27,14 +26,6 @@ const TaskboardPage = () => {
   useEffect(() => {
     const authenticateUser = async () => {
       console.log("Hello authenticateUser entered");
-      try {
-        const response = await loginUser('test-username', 'password');
-        console.log('Username:', response.username);
-        console.log('Auth Token:', response.auth_token);
-        setAuthToken(response.auth_token);
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
     };
 
     authenticateUser();
