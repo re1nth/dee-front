@@ -2,10 +2,10 @@
 
 Built this complete project with the help of GPT
 
-Project Board -
+# Project Board -
 <img width="2536" alt="Screenshot 2024-10-24 at 1 41 09 PM" src="https://github.com/user-attachments/assets/46576f65-8072-4242-985c-bde43369eb99" />
 
-Tasks Board - 
+# Tasks Board - 
 <img width="2560" alt="Screenshot 2024-10-24 at 1 41 54 PM" src="https://github.com/user-attachments/assets/bdb0e990-344f-4ea1-b861-d572f1d2d246" />
 
 
